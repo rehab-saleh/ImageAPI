@@ -1,5 +1,6 @@
-from crypt import methods
+
 from flask  import Blueprint
+
 bp = Blueprint('filters', __name__, url_prefix='/filters')
 
 @bp.route('/blur', methods=["POST"])

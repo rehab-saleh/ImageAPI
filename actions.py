@@ -1,4 +1,3 @@
-from crypt import methods
 from flask import Blueprint 
 
 bp = Blueprint('actions', __name__, url_prefix='/actions')
@@ -7,7 +6,7 @@ bp = Blueprint('actions', __name__, url_prefix='/actions')
 def resize():
     pass
 
-@bp.route('/presets/<preset>', methods["POST"])
+@bp.route('/presets/<preset>', methods=["POST"])
 def resize_preset(preset):
     pass
 
