@@ -1,19 +1,78 @@
-from flask import Blueprint 
+from email.mime import image
+from turtle import width
+from unicodedata import name
+from flask import Blueprint, jsonify, redirect, request, url_for
+from helpers import get_secure_filename_filepath
+from PIL import Image
 
 bp = Blueprint('actions', __name__, url_prefix='/actions')
 
 @bp.route('/resize', methods=["POST"])
 def resize():
-    pass
+    filename = request.json['filename']
+    filename, filepath = get_secure_filename_filepath(filename)
+
+    try:
+        width, height = int(request.json['wedth']), int(request.json['height'])
+        image = Image.open(filepath)
+        out = image.resize((width, height))
+        out.save(filepath)
+        return redirect(url_for('download_file', name=filename))
+    
+    except FileNotFoundError:
+        return jsonify({'message': 'File not found'}), 404
+
 
 @bp.route('/presets/<preset>', methods=["POST"])
 def resize_preset(preset):
-    pass
+    presets = {'small': (640, 430), 'medium': (1280, 960), 'large': (1600, 1200)}
+
+    if preset not in presets:
+        return jsonify({'message': 'The preset is not available'}), 400
+
+    filename = request.json['filename']
+    filename, filepath = get_secure_filename_filepath(filename)
+
+    try:
+        size = presets[preset]
+        image = Image.open(filepath)
+        out = image.resize(size)
+        out.save(filepath)
+        return redirect(url_for('download_file', name=filename))
+
+    except FileNotFoundError:
+        return jsonify({'message': 'File not found.'}), 404
 
 @bp.route('/rotate', methods=["POST"])
 def rotate():
-    pass 
+    filename = request.json['filename'] 
+    filename, filepath = get_secure_filename_filepath(filename)
+
+    try:
+        degree = float(request.json['degree'])
+        image = Image.open(filepath)
+        out = image.rotate(degree)
+        out.save(filepath)
+        return redirect(url_for('download_file', name=filename))
+
+    except FileNotFoundError:
+        return jsonify({'message': 'File not found.'}), 404
 
 @bp.route('/flip', methods=["POST"])
 def flip():
-    pass
+    filename = request.json['filename']
+    filename, filepath = get_secure_filename_filepath(filename)
+
+    try:
+        image = Image.open(filepath)
+        out = None
+        if request.json['direction'] == 'horizontal':
+                out = image.transpose(Image.FLIP_TOP_BOTTOM)
+        else:
+                out = image.transpose(Image.FLIP_LEFT_RIGHT)
+        out.save(filepath)
+        return redirect(url_for('download_file', name=filename))
+
+    except FileNotFoundError:
+        return jsonify({'message': 'File not found.'}), 404
+

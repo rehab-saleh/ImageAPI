@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
  
 
 def allowed_extension(filename):
-    return '.' in filename.rsplit('.', 1)[1].lower() in curren_app.config['ALLOWED_EXTENSIONS']
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 def get_secure_filename_filepath(filename):
     filename = secure_filename(filename)

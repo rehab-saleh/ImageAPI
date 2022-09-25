@@ -1,5 +1,7 @@
-from flask import Flask,  request, jsonify
+from flask import Flask,  jsonify, request, send_from_directory
 from actions import bp as actionsbp
+from filters import bp as filtersbp
+from android import bp as androidbp
 from helpers import allowed_extension, get_secure_filename_filepath
 
 
@@ -16,6 +18,10 @@ app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 
 
 app.register_blueprint(actionsbp)
+app.register_blueprint(filtersbp)
+app.register_blueprint(androidbp)
+
+
 
 @app.route('/images', methods=['POST'])
 def upload_image():
@@ -28,7 +34,7 @@ def upload_image():
         if file.filename == '':
             return jsonify({'error': 'No file was selected'}), 400
 
-        if not allowed_exension(file.filename):
+        if not allowed_extension(file.filename):
             return jsonify({'error': 'The extension is not supported.'}), 400
 
         filename, filepath = get_secure_filename_filepath(file.filename)
@@ -38,3 +44,7 @@ def upload_image():
             'message': 'File successfully uploaded',
             'filename': filename
         }), 201
+
+@app.route('/uploads/<name>')
+def download_file(name):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], name)
