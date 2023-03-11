@@ -8,12 +8,13 @@ from helpers import get_secure_filename_filepath, download_from_s3
 
 bp = Blueprint('actions', __name__, url_prefix='/actions')
 
-URL = 'https://image-storage-api.s3.eu-west-3.amazonaws.com'
+URL = 'https://image-api-bucket2.s3.amazonaws.com'
 
 
 @bp.route('/resize', methods=["POST"])
 def resize():
     filename = request.json['filename']
+    filename, filepath = get_secure_filename_filepath(filename)
 
     try:
         file_stream = download_from_s3(filename)
@@ -22,6 +23,7 @@ def resize():
         out = image.resize((width, height))
         out.save(os.path.join(current_app.config['DOWNLOAD_FOLDER'], filename))
         return redirect(url_for('download_file', name=filename))
+        
     except FileNotFoundError:
         return jsonify({"message": "File not found."}), 404
 

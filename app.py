@@ -28,6 +28,7 @@ app.register_blueprint(filtersbp)
 app.register_blueprint(androidbp)
 
 
+
 @app.route('/')
 def index():
     return jsonify({'message': 'Welcome to Image API'})

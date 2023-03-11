@@ -34,9 +34,8 @@ def download_from_s3(filename):
     if not os.path.exists(current_app.config['DOWNLOAD_FOLDER']):
         os.makedirs(current_app.config['DOWNLOAD_FOLDER'])
     s3_download_path = os.path.join('uploads', filename)
-    s3_resource = boto3.resource('s3', aws_access_key_id=current_app.config['S3_KEY'],
-                        aws_secret_access_key=current_app.config['S3_SECRET'])
+    s3_resource = boto3.resource('s3', aws_access_key_id=current_app.config['S3_KEY'], aws_secret_access_key=current_app.config['S3_SECRET'])
     bucket = s3_resource.Bucket(current_app.config['S3_BUCKET'])
-    s3_object = bucket.Object(s3_download_path)
+    s3_object = bucket.Object(s3_object_path)
     response = s3_object.get()
     return response['Body']
